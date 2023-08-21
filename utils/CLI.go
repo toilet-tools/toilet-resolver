@@ -9,11 +9,6 @@ import (
 	"github.com/nathan-fiscaletti/consolesize-go"
 )
 
-func Error(str string, code int) {
-	fmt.Println(str)
-	os.Exit(code)
-}
-
 func Clear() {
 	cmd := exec.Command("cmd", "/c", "cls")
 	cmd.Stdout = os.Stdout

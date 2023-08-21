@@ -1,6 +1,6 @@
 module github.com/toilet-tools/toilet-resolver
 
-go 1.19
+go 1.19.2
 
 require github.com/Delta456/box-cli-maker/v2 v2.3.0
 

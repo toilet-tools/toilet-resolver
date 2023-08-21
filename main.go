@@ -20,7 +20,7 @@ var (
 
 	// app defaults
 	titleBox = box.New(box.Config{Px: 2, Py: 1, Type: "Round", TitlePos: "Bottom", Color: "Blue", TitleColor: "Cyan", ContentColor: "White", AllowWrapping: true})
-	logger   = log.New("setprefixhere")
+	logger   = log.New("<TIME>")
 )
 
 func main() {
@@ -70,7 +70,8 @@ func main() {
 		},
 		Action: func(ctx *cli.Context) error {
 			if domain == "" {
-				utils.Error("No domain specified!", 1)
+				logger.Error("No domain specified!")
+				os.Exit(1)
 			}
 
 			utils.Title("Toilet-Resolver")
@@ -88,12 +89,6 @@ func main() {
 				utils.Cyan("╔╦╗╔═╗╦╦  ╔═╗╔╦╗  ╦═╗╔═╗╔═╗╔═╗╦ ╦  ╦╔═╗╦═╗\n")+
 					utils.Blue(" ║ ║ ║║║  ║╣  ║───╠╦╝║╣ ╚═╗║ ║║ ╚╗╔╝║╣ ╠╦╝\n")+
 					utils.DBlue(" ╩ ╚═╝╩╩═╝╚═╝ ╩   ╩╚═╚═╝╚═╝╚═╝╩═╝╚╝ ╚═╝╩╚═"), utils.Cyan(domain), utils.Cyan(ua)))
-
-			logger.Info("info, logger default prefix can include <TIME> to have the time in the prefix")
-
-			logger = log.New("") // or no prefix!
-			logger.Debug("debug")
-			logger.Money("money", "")
 
 			core.Resolve(domain, verbose)
 

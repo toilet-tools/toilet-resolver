@@ -23,12 +23,14 @@ var (
 func HandleAgents() {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
-		utils.Error("Failed getting path: "+err.Error(), 1)
+		logger.Error("Failed getting path: " + err.Error())
+		os.Exit(1)
 	}
-	file, err := os.Open(dir + "/agents.txt")
 
+	file, err := os.Open(dir + "/agents.txt")
 	if err != nil {
-		utils.Error("Failed opening file: "+err.Error(), 1)
+		logger.Error("Failed opening file: " + err.Error())
+		os.Exit(1)
 	}
 
 	scanner := bufio.NewScanner(file)
@@ -49,26 +51,31 @@ func ProcessUserAgent(userAgent string) {
 	}
 
 	if userAgent == "random" {
-		rand.Seed(time.Now().UnixNano())
 		min := 1
-		max := len(agentsFromFile)
-		UserAgent = agentsFromFile[rand.Intn(max-min+1)+min]
+		max := len(agentsFromFile) - 1
+		UserAgent = agentsFromFile[rand.Intn(max-min)+min]
 	} else {
 		UserAgent = userAgent
 	}
 }
 
 func Resolve(domain string, verbose bool) {
-	client := req.C().SetUserAgent(UserAgent)
+	client := req.C().SetUserAgent(UserAgent).SetTimeout(time.Second)
+
+	if !strings.Contains(domain, "http") && !strings.Contains(domain, "://") {
+		domain = "https://" + domain
+	}
+	logger.Log("i", domain, "Domain", utils.LBlueCol)
 	for i := 1; i < 15; i++ {
-		resp, err := client.R().Get("https://google.com")
+		resp, err := client.R().Get(domain)
+
 		if err != nil {
-			utils.Error("error: "+err.Error(), 1)
+			logger.Error(err.Error())
 			return
 		}
 
 		if resp.IsSuccessState() { // Status code is between 200 and 299.
-			logger.Success("successfully sent GET req to google.com")
+			logger.Success("successfully sent GET req to " + domain)
 		}
 	}
 }
